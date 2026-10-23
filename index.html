@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CUAL / 飞行日志 — 中国民航大学无人飞行器实验室</title>
+<meta name="description" content="CAUC Unmanned Aerial Lab (CUAL) — 中国民航大学无人飞行器实验室。CADC / CUADC 竞赛团队，34 架飞行器，26 项国家级奖项。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="CUAL / 飞行日志 — 中国民航大学无人飞行器实验室">
+<meta property="og:description" content="以创新为翼，以蓝天为梦。2023 年成立的 CADC / CUADC 竞赛实验室，记录每一年的训练、赛场与名字。">
+<meta property="og:image" content="assets/images/通用/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b0b0b">
+<link rel="icon" href="assets/images/通用/logo-mark.png">
+<link rel="stylesheet" href="assets/css/main.css?v=25">
+<link rel="stylesheet" href="assets/css/intro14.css?v=25">
+<script>
+  document.documentElement.classList.add('js');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('reduced');
+</script>
+</head>
+<body>
+
+<noscript>
+  <div class="noscript">
+    <b>CUAL / FLIGHT LOG</b>
+    <p>本页的飞行日志由 JavaScript 渲染。请在浏览器中启用 JavaScript 后重新载入。</p>
+    <p><a href="mailto:241440580@cauc.edu.cn">241440580@cauc.edu.cn</a></p>
+  </div>
+</noscript>
+
+<a class="skip" href="#facts">跳到主内容</a>
+
+<!-- 载入遮罩 -->
+<div class="boot" id="boot" aria-hidden="true">
+  <div class="boot-inner">
+    <span class="boot-mark">CUAL</span>
+    <span class="boot-line"><i></i></span>
+    <span class="boot-meta">FLIGHT LOG · 2023—2026</span>
+  </div>
+</div>
+
+<!-- 网格 / HUD 叠加 -->
+<div class="grid-overlay" id="gridOverlay" aria-hidden="true">
+  <div class="g-inner">
+    <span class="g-tag g-tag-a">GRID / 12 COL</span>
+    <span class="g-tag g-tag-b">SCALE 1:1 · 1440</span>
+    <span class="g-tag g-tag-c">CUAL — FLIGHT LOG</span>
+  </div>
+</div>
+
+<!-- 顶栏 -->
+<header class="bar" id="bar">
+  <a class="bar-brand" href="#home" aria-label="回到首页">
+    <img class="bar-logo" src="assets/images/通用/logo-mark.png" alt="">
+    <span class="bar-name"><b>CUAL</b><i>CAUC UNMANNED AERIAL LAB</i></span>
+  </a>
+  <nav class="bar-nav" id="barNav" aria-label="主导航"></nav>
+  <div class="bar-tools">
+    <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menuPanel">索引</button>
+    <span class="clock" id="clock">--:--:--</span>
+    <button class="tool-btn" id="gridBtn" type="button" aria-pressed="false" title="显示/隐藏网格 (G)">GRID</button>
+  </div>
+</header>
+
+<!-- 移动端索引（侧滑抽屉） -->
+<div class="menu-panel" id="menuPanel" hidden>
+  <div class="menu-sheet" role="dialog" aria-modal="true" aria-label="目录">
+    <div class="menu-head">
+      <span>索引 / INDEX</span>
+      <span>FLIGHT LOG 2023—2026</span>
+      <button class="menu-close" id="menuClose" type="button" aria-label="关闭目录">CLOSE ✕</button>
+    </div>
+    <nav class="menu-list" id="menuList" aria-label="目录"></nav>
+    <div class="menu-foot">
+      <a href="mailto:241440580@cauc.edu.cn">241440580@cauc.edu.cn</a>
+      <span>TIANJIN · CN</span>
+    </div>
+  </div>
+</div>
+
+<!-- 高度尺 -->
+<aside class="alt" id="alt" aria-label="高度尺导航">
+  <div class="alt-scale">
+    <div class="alt-track"><span class="alt-fill" id="altFill"></span></div>
+    <div class="alt-ticks" id="altTicks"></div>
+  </div>
+  <div class="alt-read"><span>ALT</span><b id="altNum">0000</b><em id="altName">首屏</em></div>
+</aside>
+
+<main id="main">
+
+  <!-- 00 首屏 -->
+  <section class="hero" id="home" data-theme="dark" data-name="首屏">
+    <canvas class="hero-canvas" id="heroCanvas" aria-hidden="true"></canvas>
+    <svg class="hero-route" id="heroRoute" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <path id="routePath" d="M-80,720 C260,690 330,470 560,470 C820,470 870,250 1130,238 C1330,228 1430,140 1690,96" fill="none" stroke="rgba(255,74,18,.55)" stroke-width="1.2" stroke-dasharray="3 9"/>
+      <path id="routePath2" d="M-80,760 C300,730 380,520 620,520 C880,520 930,300 1190,288 C1390,278 1480,190 1720,146" fill="none" stroke="rgba(241,238,229,.14)" stroke-width="1"/>
+      <circle id="routeDot" r="4" fill="#ff4a12"/>
+      <g class="hp" id="planeA" style="color:#ff4a12" aria-label="沿橙色航线飞行的飞机，可拖动">
+        <g class="hp-scale" transform="scale(1.28)">
+        <circle r="9" fill="rgba(255,74,18,.12)"/>
+        <g class="hp-body">
+          <path d="M9.0 0 C7.8 -0.55 6.6 -0.95 5.0 -1.05 L-5.0 -1.05 C-6.6 -1.05 -7.8 -0.9 -8.4 -0.55 L-8.4 0.55 C-7.8 0.9 -6.6 1.05 -5.0 1.05 L5.0 1.05 C6.6 0.95 7.8 0.55 9.0 0 Z"/>
+          <path d="M0.95 1.0 L-0.55 8.35 L-2.05 8.35 L-1.25 1.0 Z"/>
+          <path d="M0.95 -1.0 L-0.55 -8.35 L-2.05 -8.35 L-1.25 -1.0 Z"/>
+          <path d="M-5.15 0.95 L-7.35 3.05 L-8.25 2.72 L-6.35 0.9 Z"/>
+          <path d="M-5.15 -0.95 L-7.35 -3.05 L-8.25 -2.72 L-6.35 -0.9 Z"/>
+        </g>
+        <path d="M-8.6 -2.5 L-8.6 2.5" stroke="rgba(255,74,18,.85)" stroke-width=".55" stroke-linecap="round"/>
+        <circle cx="-8.6" cy="0" r=".8" fill="#ff4a12"/>
+        </g>
+      </g>
+      <g class="hp" id="planeB" style="color:#f1eee5" aria-label="沿白色航线反向飞行的飞机，可拖动">
+        <g class="hp-scale" transform="scale(1.28)">
+        <circle r="9" fill="rgba(241,238,229,.10)"/>
+        <g class="hp-body">
+          <path d="M9.0 0 C7.8 -0.55 6.6 -0.95 5.0 -1.05 L-5.0 -1.05 C-6.6 -1.05 -7.8 -0.9 -8.4 -0.55 L-8.4 0.55 C-7.8 0.9 -6.6 1.05 -5.0 1.05 L5.0 1.05 C6.6 0.95 7.8 0.55 9.0 0 Z"/>
+          <path d="M0.95 1.0 L-0.55 8.35 L-2.05 8.35 L-1.25 1.0 Z"/>
+          <path d="M0.95 -1.0 L-0.55 -8.35 L-2.05 -8.35 L-1.25 -1.0 Z"/>
+          <path d="M-5.15 0.95 L-7.35 3.05 L-8.25 2.72 L-6.35 0.9 Z"/>
+          <path d="M-5.15 -0.95 L-7.35 -3.05 L-8.25 -2.72 L-6.35 -0.9 Z"/>
+        </g>
+        <path d="M-8.6 -2.5 L-8.6 2.5" stroke="rgba(241,238,229,.7)" stroke-width=".55" stroke-linecap="round"/>
+        <circle cx="-8.6" cy="0" r=".8" fill="#f1eee5"/>
+        </g>
+      </g>
+    </svg>
+    <div class="hero-ripples" aria-hidden="true"><i></i><i></i><i></i></div>
+
+    <div class="hero-frame">
+      <div class="hero-meta">
+        <span>FLIGHT LOG / 2023 — 2026</span>
+        <span>TIANJIN · CN</span>
+      </div>
+
+      <div class="hero-body">
+        <div class="hero-copy">
+          <p class="eyebrow" data-hin><i class="dot"></i>中国民航大学 · 无人飞行器实验室</p>
+          <h1 class="hero-title">
+            <span class="hero-latin" aria-label="CUAL"><span class="ch" style="--d:.18s" aria-hidden="true">C</span><span class="ch" style="--d:.255s" aria-hidden="true">U</span><span class="ch" style="--d:.33s" aria-hidden="true">A</span><span class="ch" style="--d:.405s" aria-hidden="true">L</span></span>
+            <span class="hero-cn"><span class="cn-group"><span class="ch" style="--d:.52s">无</span><span class="ch" style="--d:.555s">人</span><span class="ch" style="--d:.59s">飞</span><span class="ch" style="--d:.625s">行</span><span class="ch" style="--d:.66s">器</span></span><em class="cn-group"><span class="ch" style="--d:.70s">实</span><span class="ch" style="--d:.735s">验</span><span class="ch" style="--d:.77s">室</span></em></span>
+          </h1>
+          <p class="hero-lede" id="heroLede" data-hin></p>
+          <div class="hero-cta" data-hin>
+            <a class="btn btn-solid" href="#projects">沿航线进入 <span>↓</span></a>
+            <a class="btn btn-line" href="#join">招新 / JOIN</a>
+          </div>
+        </div>
+
+        <aside class="mission-card" data-hin>
+          <div class="mc-head"><span>MISSION INDEX</span><span>04</span></div>
+          <ol id="missionList"></ol>
+          <div class="mc-foot"><span>26 NATIONAL AWARDS</span><span>34 AIRFRAMES</span></div>
+        </aside>
+      </div>
+
+      <div class="hero-foot">
+        <span>SCROLL TO FLY <i>↓↓</i></span>
+        <span>39.3°N / 117.8°E</span>
+      </div>
+    </div>
+
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track" id="tickerTrack"></div>
+    </div>
+  </section>
+
+  <!-- 01 概况 -->
+  <section class="sec light" id="facts" data-theme="light" data-name="概况">
+    <div class="sec-side"><span>01</span><span>FACTS</span></div>
+    <div class="sec-head">
+      <p class="kicker">01 / FACTS &amp; FIGURES</p>
+      <h2>三年，<br>把图纸飞成航线。</h2>
+      <p class="sec-note">CUAL 成立于 2023 年，以 CADC 与 CUADC 为核心竞技平台，专注无人飞行器的设计、制造与飞行。</p>
+    </div>
+
+    <div class="stats" id="stats"></div>
+    <div class="about" id="about"></div>
+    <div class="mv" id="mv"></div>
+    <div class="fact-strip">
+      <span>ROOT. 2023</span>
+      <span>34 AIRFRAMES BUILT</span>
+      <span>26 NATIONAL AWARDS</span>
+      <span>交通科学与工程学院</span>
+    </div>
+  </section>
+
+  <!-- 02 项目 -->
+  <section class="sec light" id="projects" data-theme="light" data-name="项目">
+    <div class="sec-side"><span>02</span><span>PROJECTS</span></div>
+    <div class="sec-head">
+      <p class="kicker">02 / ACTIVE MISSIONS</p>
+      <h2>四个项目，<br>四条赛道。</h2>
+      <p class="sec-note">从悬停投放到折叠机翼，从穿越机打击到三项全能。点击展开每个项目的任务简报。</p>
+    </div>
+
+    <div class="proj-list" id="projList"></div>
+
+    <div class="future-head">
+      <p class="kicker">NEXT / 2026—</p>
+      <h3>下一段航线</h3>
+    </div>
+    <div class="future" id="future"></div>
+  </section>
+
+  <!-- 03 历程 -->
+  <section class="sec dark" id="story" data-theme="dark" data-name="历程">
+    <canvas class="sec-shader" id="storyShader" aria-hidden="true"></canvas>
+    <div class="sec-side"><span>03</span><span>LOG</span></div>
+    <div class="sec-head">
+      <p class="kicker">03 / LOGBOOK</p>
+      <h2>每一年的<br>飞行记录。</h2>
+      <p class="sec-note">从校级社团「无人之翼」到独立的竞赛实验室，四年四段航程。</p>
+    </div>
+
+    <div class="story-wrap">
+      <div class="story-ghost"><span id="storyGhost">2023</span></div>
+      <ol class="timeline" id="timeline"></ol>
+    </div>
+  </section>
+
+  <!-- 04 战绩 -->
+  <section class="sec light" id="record" data-theme="light" data-name="战绩">
+    <div class="sec-side"><span>04</span><span>RECORD</span></div>
+    <div class="sec-head">
+      <p class="kicker">04 / COMPETITION RECORD</p>
+      <h2>用成绩<br>记录航迹。</h2>
+      <p class="sec-note">2024—2026 全部获奖记录，按年份归档。</p>
+    </div>
+
+    <div class="record-top">
+      <div class="record-big"><b id="awardBig">26</b><span>国家级奖项</span></div>
+      <div class="record-mini" id="recordMini"></div>
+      <div class="year-filter" id="yearFilter" role="group" aria-label="按年份筛选"></div>
+    </div>
+
+    <div class="log" id="log"></div>
+  </section>
+
+  <!-- 05 成员 -->
+  <section class="sec light" id="crew" data-theme="light" data-name="成员">
+    <div class="sec-side"><span>05</span><span>CREW</span></div>
+    <div class="sec-head">
+      <p class="kicker">05 / CREW MANIFEST</p>
+      <h2>上飞机的人。</h2>
+      <p class="sec-note">指导老师与 44 名在册成员，创始人单独归档。按项目、届别或部门筛选，找到每个名字的位置。</p>
+    </div>
+
+    <div class="advisor" id="advisor"></div>
+
+    <div class="crew-tabs" id="crewTabs" role="tablist" aria-label="成员视图">
+      <button class="tab" type="button" role="tab" data-view="members" aria-selected="true">在册成员 <b id="tabCountMembers">44</b></button>
+      <button class="tab" type="button" role="tab" data-view="founders" aria-selected="false">创始人 <b id="tabCountFounders">3</b></button>
+    </div>
+
+    <div class="crew-filters">
+      <div class="filter-row"><span class="filter-label">项目</span><div id="projFilter" role="group" aria-label="按项目筛选"></div></div>
+      <div class="filter-row"><span class="filter-label">届别</span><div id="cohortFilter" role="group" aria-label="按届别筛选"></div></div>
+      <div class="filter-row"><span class="filter-label">部门</span><div id="deptFilter" role="group" aria-label="按部门筛选"></div></div>
+      <div class="crew-count"><b id="crewCount">44</b><span>在册</span></div>
+    </div>
+
+    <div class="crew-grid rv" id="crewGrid"></div>
+    <div class="founders" id="founders"></div>
+  </section>
+
+  <!-- 06 影像 -->
+  <section class="sec dark" id="frames" data-theme="dark" data-name="影像">
+    <div class="sec-side"><span>06</span><span>FRAMES</span></div>
+    <div class="frames-head">
+      <div class="sec-head">
+        <p class="kicker">06 / FRAMES</p>
+        <h2>飞过的地方，<br>都留下了照片。</h2>
+        <p class="sec-note">照片墙按类横排，缓慢自走；可拖拽、点击放大。</p>
+      </div>
+      <figure class="frames-plate">
+        <img src="assets/images/生成/gen-plate-01.jpg" alt="程序生成的双色半调海报：一张试飞照片被重排成网点，印着 AIRFRAME 24" loading="lazy" width="900" height="1200">
+        <figcaption>PLATE 01 / 生成图像 / 900 × 1200</figcaption>
+      </figure>
+    </div>
+
+    <div class="sim" id="sim">
+      <div class="sim-head">
+        <span>REAL-TIME MODEL / 26-1 电磁版 · 整机装配</span>
+        <span>DRAG TO ORBIT · SCROLL TO ZOOM</span>
+      </div>
+      <div class="sim-body">
+        <div class="sim-stage">
+          <img class="sim-poster" src="assets/models/airframe-poster.jpg" alt="26-1 号机整机离线渲染图" width="1600" height="1040" loading="lazy" decoding="async">
+          <canvas id="simCanvas" data-model="26-1" role="img" tabindex="0" aria-label="可拖拽旋转的 26-1 号机整机三维模型，可用方向键旋转、加减号缩放"></canvas>
+          <div class="sim-hud">
+            <span>SLDASM / 26-1</span>
+            <span id="simStatus">LOADING</span>
+          </div>
+          <div class="sim-hint" id="simHint">DRAG / 拖动旋转 · 滚轮缩放</div>
+        </div>
+        <div class="sim-side">
+          <p class="kicker">03D / ASSEMBLY</p>
+          <h3>三十四架里的<br>这一架。</h3>
+          <p>26-1 号机的整机装配，从 SolidWorks 原样导出：30 个零件、19.5 万个面，逐件保留材质分区。拖动它，看看它装好之后的样子。</p>
+          <ul class="sim-spec">
+            <li><span>MODEL</span><b>26 电磁版（终版）· 整机装配</b></li>
+            <li><span>PARTS</span><b>30 个零件 / 19.5 万三角面</b></li>
+            <li><span>LOAD</span><b>网球 · 电磁发射机构</b></li>
+            <li><span>DATA</span><b>分片混淆加载 · 不提供原始网格</b></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="rails"></div>
+  </section>
+
+  <!-- 07 加入 -->
+  <section class="sec light" id="join" data-theme="light" data-name="加入">
+    <div class="sec-side"><span>07</span><span>JOIN</span></div>
+    <div class="join-hero">
+      <h2 class="mega">把想法<br>飞上天<span>。</span></h2>
+      <div class="join-intro" id="joinIntro"></div>
+    </div>
+
+    <div class="join-stats" id="joinStats"></div>
+
+    <div class="directions" id="directions"></div>
+
+    <div class="join-two">
+      <div class="process">
+        <p class="kicker">HOW TO BOARD</p>
+        <h3>登机流程</h3>
+        <ol id="process"></ol>
+      </div>
+      <div class="why">
+        <p class="kicker">WHY CUAL</p>
+        <h3>为什么值得来</h3>
+        <ul id="why"></ul>
+      </div>
+    </div>
+
+    <div class="faq-head">
+      <p class="kicker">FAQ</p>
+      <h3>你可能想问</h3>
+    </div>
+    <div class="faq" id="faq"></div>
+  </section>
+
+  <!-- 08 联系 -->
+  <section class="sec contact" id="contact" data-theme="light" data-name="联系">
+    <canvas class="sec-shader" id="contactShader" aria-hidden="true"></canvas>
+    <div class="sec-side"><span>08</span><span>CONTACT</span></div>
+    <div class="contact-grid">
+      <div>
+        <p class="kicker">08 / CONTACT</p>
+        <h2>来找我们，<br>或者直接起飞。</h2>
+        <a class="mail" id="mailLink" href="#"></a>
+        <dl class="contact-rows" id="contactRows"></dl>
+      </div>
+      <div class="contact-side">
+        <figure class="qr">
+          <img id="qrImg" src="assets/images/通用/2026新生群.jpg" alt="2026 CUAL 招新群二维码">
+          <figcaption>扫码进招新群</figcaption>
+        </figure>
+        <figure class="map">
+          <img src="assets/images/通用/map-location.png" alt="中国民航大学宁河校区位置示意图">
+          <figcaption>中国民航大学 · 宁河校区</figcaption>
+        </figure>
+        <div class="contact-mark" aria-hidden="true">
+          <b>103</b>
+          <span>交通楼二期 / ROOM 103<br>宁河校区 · 天津市</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot" data-theme="dark">
+  <div class="foot-top">
+    <div class="foot-brand">
+      <span class="foot-latin">CUAL</span>
+      <p>CAUC Unmanned Aerial Lab<br>中国民航大学无人飞行器实验室</p>
+    </div>
+    <nav id="footNav" aria-label="页脚导航"></nav>
+  </div>
+  <div class="sponsors">
+    <span class="sponsor-label">SUPPORTED BY</span>
+    <div id="sponsorList"></div>
+  </div>
+  <div class="foot-bottom">
+    <span id="copyright"></span>
+    <span class="foot-note">中国民航大学 · 无人飞行器实验室 · TIANJIN</span>
+  </div>
+</footer>
+
+<!-- 灯箱 -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="图片查看" hidden>
+  <button class="lb-close" id="lbClose" aria-label="关闭">✕</button>
+  <button class="lb-prev" id="lbPrev" aria-label="上一张">←</button>
+  <button class="lb-next" id="lbNext" aria-label="下一张">→</button>
+  <figure class="lb-figure">
+    <img id="lbImg" src="" alt="">
+    <figcaption id="lbCap"></figcaption>
+  </figure>
+  <div class="lb-count" id="lbCount"></div>
+</div>
+
+<!-- 背景音乐 -->
+<audio id="bgm" loop preload="none" playsinline
+       src="https://music.163.com/song/media/outer/url?id=2658038999.mp3"></audio>
+<button class="bgm-btn" id="bgmBtn" type="button" aria-pressed="false" aria-label="背景音乐开关">
+  <svg class="bgm-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L13 5.2v13.6l-5.5-4.3H4z"/><path class="bgm-w1" d="M16.4 9a4.4 4.4 0 010 6"/><path class="bgm-w2" d="M18.9 6.6a8 8 0 010 10.8"/><path class="bgm-x" d="M16.6 9.4l4.8 5.2M21.4 9.4l-4.8 5.2"/></svg><span class="bgm-txt">SOUND OFF</span>
+</button>
+
+<div class="cursor" id="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-ring"></span></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/photos.js"></script>
+<script src="assets/js/crew.js"></script>
+<script src="assets/js/intro14.js"></script>
+<script src="assets/js/app.js?v=25"></script>
+<script src="assets/js/sim-model.js"></script>
+</body>
+</html>

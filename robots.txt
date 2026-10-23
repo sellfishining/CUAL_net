@@ -1,0 +1,17 @@
+# CUAL Website Robots.txt
+# https://cual.cauc.edu.cn/
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://cual.cauc.edu.cn/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 10
+
+# Disallow admin and private areas (if any)
+Disallow: /admin.html
+Disallow: /config.json
+Disallow: /assets/js/admin.js
+Disallow: /assets/css/admin.css
