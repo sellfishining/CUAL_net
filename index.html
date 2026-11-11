@@ -12,8 +12,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0b0b0b">
 <link rel="icon" href="assets/images/通用/logo-mark.png">
-<link rel="stylesheet" href="assets/css/main.css?v=25">
-<link rel="stylesheet" href="assets/css/intro14.css?v=25">
+<link rel="stylesheet" href="assets/css/main.css?v=83">
+<link rel="stylesheet" href="assets/css/intro14.css?v=83">
 <script>
   document.documentElement.classList.add('js');
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('reduced');
@@ -175,8 +175,36 @@
       <p class="sec-note">CUAL 成立于 2023 年，以 CADC 与 CUADC 为核心竞技平台，专注无人飞行器的设计、制造与飞行。</p>
     </div>
 
-    <div class="stats" id="stats"></div>
-    <div class="about" id="about"></div>
+    <div class="zfacts">
+      <div class="zfacts-main">
+        <div class="about" id="about"></div>
+        <ul class="ztags" aria-label="关键词">
+          <li>CADC</li><li>CUADC</li><li>模拟搜救</li><li>微型折叠</li><li>精准打击</li><li>三项全能</li>
+        </ul>
+      </div>
+      <div class="zfacts-side">
+        <figure class="zfig zfig-lg">
+          <img src="assets/images/赛场风采/2026崇礼总决赛合影.jpg" alt="2026 CADC 崇礼总决赛合影" loading="lazy" decoding="async">
+          <figcaption><b>2025</b><span>CADC 崇礼总决赛</span></figcaption>
+        </figure>
+        <div class="zfacts-pair">
+          <figure class="zfig zfig-sm">
+            <img src="assets/images/赛场风采/2026倾转旋翼.png" alt="2026 倾转旋翼" loading="lazy" decoding="async">
+            <figcaption><b>2026</b><span>倾转旋翼</span></figcaption>
+          </figure>
+          <figure class="zfig zfig-sm">
+            <img src="assets/images/赛场风采/2026首席质检员线条海报-横.jpg" alt="首席质检员：实验室的猫在检查 26-1 电磁版整机" loading="lazy" decoding="async">
+            <figcaption><b>2026</b><span>首席质检员</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+    <div class="zkpi" aria-label="实验室数据">
+      <div class="zkpi-cell"><b data-count="26">0</b><i>项</i><span>国家级奖项</span><em>NATIONAL AWARDS</em></div>
+      <div class="zkpi-cell"><b data-count="10">0</b><i>座</i><span>团体奖杯</span><em>TEAM TROPHIES</em></div>
+      <div class="zkpi-cell"><b data-count="44">0</b><i>人</i><span>在册成员</span><em>CREW ON DECK</em></div>
+      <div class="zkpi-cell"><b data-count="34">0</b><i>架</i><span>飞行器</span><em>AIRFRAMES</em></div>
+    </div>
     <div class="mv" id="mv"></div>
     <div class="fact-strip">
       <span>ROOT. 2023</span>
@@ -241,13 +269,16 @@
   <!-- 05 成员 -->
   <section class="sec light" id="crew" data-theme="light" data-name="成员">
     <div class="sec-side"><span>05</span><span>CREW</span></div>
-    <div class="sec-head">
-      <p class="kicker">05 / CREW MANIFEST</p>
-      <h2>上飞机的人。</h2>
-      <p class="sec-note">指导老师与 44 名在册成员，创始人单独归档。按项目、届别或部门筛选，找到每个名字的位置。</p>
-    </div>
+    <header class="zhead">
+      <span class="zhead-idx">05</span>
+      <div class="zhead-main">
+        <span class="ztag"><i></i>CREW / 成员</span>
+        <h2 class="zhead-title">44 个人，一个机库。</h2>
+      </div>
+      <p class="zhead-note">指导老师 <b id="crewStatTeacher">1</b> 名 · 创始人 <b id="crewStatFounder">3</b> 名<br>在册成员 <b id="crewStatMember">44</b> 名</p>
+    </header>
 
-    <div class="advisor" id="advisor"></div>
+    <div class="zadvisor" id="advisor"></div>
 
     <div class="crew-tabs" id="crewTabs" role="tablist" aria-label="成员视图">
       <button class="tab" type="button" role="tab" data-view="members" aria-selected="true">在册成员 <b id="tabCountMembers">44</b></button>
@@ -313,28 +344,38 @@
   </section>
 
   <!-- 07 加入 -->
-  <section class="sec light" id="join" data-theme="light" data-name="加入">
+  <section class="sec light zjoin" id="join" data-theme="light" data-name="加入">
     <div class="sec-side"><span>07</span><span>JOIN</span></div>
-    <div class="join-hero">
-      <h2 class="mega">把想法<br>飞上天<span>。</span></h2>
-      <div class="join-intro" id="joinIntro"></div>
+
+    <header class="zhead">
+      <span class="zhead-idx" aria-hidden="true">07</span>
+      <div class="zhead-main">
+        <p class="ztag"><i aria-hidden="true"></i>ENLIST / 加入</p>
+        <h2 class="zhead-title">零基础入队。</h2>
+      </div>
+      <p class="zhead-note">不限专业 · 不限基础<br>先来聊聊你想飞成什么样</p>
+    </header>
+
+    <div class="zjoin-grid">
+      <div class="zroles" id="directions"></div>
+
+      <aside class="zjoin-side">
+        <ol class="zsteps" id="process"></ol>
+        <figure class="zqr">
+          <img id="qrImg" src="assets/images/通用/2026新生群.jpg" alt="2026 CUAL 招新群二维码">
+          <figcaption>
+            <b>扫码进群</b>
+            <span>招新咨询 · 校内通知</span>
+            <em>QR / 2026</em>
+          </figcaption>
+        </figure>
+        <p class="zjoin-note" id="joinNote"></p>
+      </aside>
     </div>
 
-    <div class="join-stats" id="joinStats"></div>
-
-    <div class="directions" id="directions"></div>
-
-    <div class="join-two">
-      <div class="process">
-        <p class="kicker">HOW TO BOARD</p>
-        <h3>登机流程</h3>
-        <ol id="process"></ol>
-      </div>
-      <div class="why">
-        <p class="kicker">WHY CUAL</p>
-        <h3>为什么值得来</h3>
-        <ul id="why"></ul>
-      </div>
+    <div class="zwhy">
+      <p class="zkicker">WHY CUAL / 为什么值得来</p>
+      <ul id="why"></ul>
     </div>
 
     <div class="faq-head">
@@ -345,51 +386,55 @@
   </section>
 
   <!-- 08 联系 -->
-  <section class="sec contact" id="contact" data-theme="light" data-name="联系">
-    <canvas class="sec-shader" id="contactShader" aria-hidden="true"></canvas>
+  <section class="sec contact zcontact" id="contact" data-theme="dark" data-name="联系">
+    <canvas class="sec-shader" id="contactShader" data-dark="1" aria-hidden="true"></canvas>
     <div class="sec-side"><span>08</span><span>CONTACT</span></div>
-    <div class="contact-grid">
-      <div>
-        <p class="kicker">08 / CONTACT</p>
-        <h2>来找我们，<br>或者直接起飞。</h2>
-        <a class="mail" id="mailLink" href="#"></a>
-        <dl class="contact-rows" id="contactRows"></dl>
+
+    <header class="zhead zhead-dark">
+      <span class="zhead-idx" aria-hidden="true">08</span>
+      <div class="zhead-main">
+        <p class="ztag"><i aria-hidden="true"></i>CONTACT / 联络</p>
+        <h2 class="zhead-title">来机库看看。</h2>
       </div>
-      <div class="contact-side">
-        <figure class="qr">
-          <img id="qrImg" src="assets/images/通用/2026新生群.jpg" alt="2026 CUAL 招新群二维码">
-          <figcaption>扫码进招新群</figcaption>
-        </figure>
-        <figure class="map">
-          <img src="assets/images/通用/map-location.png" alt="中国民航大学宁河校区位置示意图">
-          <figcaption>中国民航大学 · 宁河校区</figcaption>
-        </figure>
-        <div class="contact-mark" aria-hidden="true">
-          <b>103</b>
-          <span>交通楼二期 / ROOM 103<br>宁河校区 · 天津市</span>
-        </div>
-      </div>
+      <p class="zhead-note">宁河校区交通楼二期 103<br>随时可以推门进来</p>
+    </header>
+
+    <div class="zcontact-grid">
+      <div class="zc-main" id="contactRows"></div>
+      <figure class="zmap">
+        <img src="assets/images/通用/map-location.png" alt="中国民航大学宁河校区位置示意图">
+        <figcaption>
+          <span>中国民航大学 · 宁河校区</span>
+          <span>天津市宁河区 · 未来科技城</span>
+        </figcaption>
+      </figure>
+    </div>
+    <div class="sponsors zsponsors">
+      <span class="sponsor-label">SUPPORT / 鸣谢</span>
+      <div id="sponsorList"></div>
     </div>
   </section>
 
 </main>
 
 <footer class="foot" data-theme="dark">
-  <div class="foot-top">
+  <div class="foot-grid">
     <div class="foot-brand">
-      <span class="foot-latin">CUAL</span>
-      <p>CAUC Unmanned Aerial Lab<br>中国民航大学无人飞行器实验室</p>
+      <p class="foot-eyebrow">CAUC UNMANNED AERIAL LAB</p>
+      <h2 class="foot-title">中国民航大学<br>无人飞行器实验室</h2>
+      <p class="foot-addr">宁河校区交通楼二期 103 · 天津市宁河区</p>
     </div>
-    <nav id="footNav" aria-label="页脚导航"></nav>
+    <nav class="foot-nav" id="footNav" aria-label="页脚导航"></nav>
+    <div class="foot-cta">
+      <a class="foot-mail" href="#contact">241440580@cauc.edu.cn</a>
+      <p class="foot-note">独立测试版本 · 非官网正式发布</p>
+      <p class="foot-copy">© 2026 CUAL</p>
+    </div>
   </div>
-  <div class="sponsors">
-    <span class="sponsor-label">SUPPORTED BY</span>
-    <div id="sponsorList"></div>
+  <div class="foot-ticker" aria-hidden="true">
+    <div class="ticker-track"><span>国家级奖项</span><i aria-hidden="true">/</i><span>10 座团体奖杯</span><i aria-hidden="true">/</i><span>44 名在册成员</span><i aria-hidden="true">/</i><span>34 架自制飞行器</span><i aria-hidden="true">/</i><span>APRON 103 · 宁河基地</span><i aria-hidden="true">/</i><span>2026 赛季进行中</span><i aria-hidden="true">/</i><span>CADC 模拟搜救</span><i aria-hidden="true">/</i><span>CADC 微型折叠飞行器</span><i aria-hidden="true">/</i><span>CUADC 精准打击</span><i aria-hidden="true">/</i><span>CUADC 三项全能</span><i aria-hidden="true">/</i><span>国家级奖项</span><i aria-hidden="true">/</i><span>10 座团体奖杯</span><i aria-hidden="true">/</i><span>44 名在册成员</span><i aria-hidden="true">/</i><span>34 架自制飞行器</span><i aria-hidden="true">/</i><span>APRON 103 · 宁河基地</span><i aria-hidden="true">/</i><span>2026 赛季进行中</span><i aria-hidden="true">/</i><span>CADC 模拟搜救</span><i aria-hidden="true">/</i><span>CADC 微型折叠飞行器</span><i aria-hidden="true">/</i><span>CUADC 精准打击</span><i aria-hidden="true">/</i><span>CUADC 三项全能</span><i aria-hidden="true">/</i></div>
   </div>
-  <div class="foot-bottom">
-    <span id="copyright"></span>
-    <span class="foot-note">中国民航大学 · 无人飞行器实验室 · TIANJIN</span>
-  </div>
+  <svg class="foot-mark" aria-hidden="true" viewBox="0 0 900 260" preserveAspectRatio="xMinYMax meet"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M0 250 L120 250 L120 90 L210 90 L210 250"/><path d="M180 250 L300 40 L420 250"/><path d="M420 250 L470 150 L520 250"/><path d="M520 250 L600 70 L700 250"/><path d="M300 250 L340 170 L380 250"/></g></svg>
 </footer>
 
 <!-- 灯箱 -->
@@ -405,10 +450,9 @@
 </div>
 
 <!-- 背景音乐 -->
-<audio id="bgm" loop preload="none" playsinline
-       src="https://music.163.com/song/media/outer/url?id=2658038999.mp3"></audio>
+<audio id="bgm" loop preload="none" playsinline></audio>
 <button class="bgm-btn" id="bgmBtn" type="button" aria-pressed="false" aria-label="背景音乐开关">
-  <svg class="bgm-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L13 5.2v13.6l-5.5-4.3H4z"/><path class="bgm-w1" d="M16.4 9a4.4 4.4 0 010 6"/><path class="bgm-w2" d="M18.9 6.6a8 8 0 010 10.8"/><path class="bgm-x" d="M16.6 9.4l4.8 5.2M21.4 9.4l-4.8 5.2"/></svg><span class="bgm-txt">SOUND OFF</span>
+  <svg class="bgm-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L13 5.2v13.6l-5.5-4.3H4z"/><path class="bgm-w1" d="M16.4 9a4.4 4.4 0 010 6"/><path class="bgm-w2" d="M18.9 6.6a8 8 0 010 10.8"/><path class="bgm-x" d="M16.6 9.4l4.8 5.2M21.4 9.4l-4.8 5.2"/></svg><span class="bgm-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="bgm-txt">SOUND OFF</span>
 </button>
 
 <div class="cursor" id="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-ring"></span></div>
@@ -417,7 +461,7 @@
 <script src="assets/js/photos.js"></script>
 <script src="assets/js/crew.js"></script>
 <script src="assets/js/intro14.js"></script>
-<script src="assets/js/app.js?v=25"></script>
+<script src="assets/js/app.js?v=83"></script>
 <script src="assets/js/sim-model.js"></script>
 </body>
 </html>

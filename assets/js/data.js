@@ -407,7 +407,7 @@ window.CUAL_CONFIG = {
       { q: "报名之后多久会有结果？", a: "一般报名截止后一周内完成初筛与面试，结果会在招新群内公布，请留意群通知。" }
     ],
     apply: {
-      qr: "assets/images/通用/2026新生群.jpg",
+      qr: "assets/images/通用/2026新生群-qr.png",
       qrHint: "扫码进招新群，了解更多",
       methods: [
         { label: "招新群", value: "扫描二维码进群咨询" }

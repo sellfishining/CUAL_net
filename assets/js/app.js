@@ -75,8 +75,8 @@
     $('#barNav').innerHTML = NAV.slice(0, 7).map(n =>
       `<a href="#${n.id}" data-nav="${n.id}"><em>${n.num}</em>${n.label}</a>`
     ).join('');
-    $('#footNav').innerHTML = NAV.map(n => `<a href="#${n.id}">${n.label}</a>`).join('')
-      + `<a href="#frames">影像集</a>`;
+    $('#footNav').innerHTML = NAV.map(n =>
+      `<a href="#${n.id}" data-foot="${n.id}">${n.label}</a>`).join('');
     const EN = { home: 'COVER', facts: 'FACTS', projects: 'MISSIONS', story: 'LOGBOOK', record: 'RECORD', crew: 'CREW', frames: 'FRAMES', join: 'JOIN', contact: 'CONTACT' };
     const list = $('#menuList');
     if (list) list.innerHTML = `<a href="#home" data-menu="home"><em>00</em><span>首屏</span><i>COVER</i></a>` + NAV.map(n =>
@@ -116,7 +116,8 @@
   function renderFacts() {
     const home = C.home || {};
     const stats = home.stats || [];
-    $('#stats').innerHTML = stats.map((s, i) => {
+    const statsHost = $('#stats');
+    if (statsHost) statsHost.innerHTML = stats.map((s, i) => {
       const raw = String(s.number);
       const m = raw.match(/^([\d.]+)(.*)$/) || [raw, raw, ''];
       return `<div class="stat rv">
@@ -136,7 +137,7 @@
     const mv = [about.mission, about.vision].filter(Boolean);
     $('#mv').innerHTML = mv.map((m, i) => `
       <div class="mv-item rv">
-        <h3><span>${i === 0 ? '使命' : '愿景'}</span>${i === 0 ? 'MISSION' : 'VISION'}</h3>
+        <h3><em>${i === 0 ? 'MISSION' : 'VISION'}</em><span>${i === 0 ? '使命' : '愿景'}</span></h3>
         <p>${m.text}</p>
       </div>`).join('');
   }
@@ -214,6 +215,20 @@
   /* ------------------------------------------------------------------
      record
   ------------------------------------------------------------------ */
+  /* 赛事头部右侧的获奖摘要：取各奖项标签去重，最多 3 条 */
+  function awardSummary(items) {
+    const seen = [];
+    items.forEach((a) => {
+      const label = String(a.detail || '')
+        .replace(/[（(][^）)]*[）)]/g, '')
+        .replace(/[^一-龥A-Za-z0-9\s·]/g, '')
+        .trim();
+      if (label && seen.indexOf(label) === -1) seen.push(label);
+    });
+    const head = seen.slice(0, 3).join(' · ');
+    return seen.length > 3 ? head + ' 等' : (head || items.length + ' 项');
+  }
+
   function renderRecord() {
     const A = (C.achievements) || {};
     const stats = A.stats || [];
@@ -225,24 +240,37 @@
     $('#yearFilter').innerHTML = `<button class="chip" type="button" data-year="all" aria-pressed="true">全部</button>` +
       years.map(y => `<button class="chip" type="button" data-year="${y}" aria-pressed="false">${y}</button>`).join('');
 
-    $('#log').innerHTML = (A.timeline || []).map(group => {
+    $('#log').innerHTML = (A.timeline || []).map((group, gi) => {
       let count = 0;
       const comps = (group.competitions || []).map((c, ci) => {
-        count += (c.awards || []).length;
-        return `<div class="competition">
-          <p class="comp-name"><i>${pad(ci + 1, 2)}</i>${c.name}</p>
-          ${(c.awards || []).map(a => `<div class="award">
-            <span class="ap">${a.project}</span>
-            <span class="ad">${a.detail}</span>
-            <span class="am">${a.members || '—'}</span>
-          </div>`).join('')}
-        </div>`;
+        const items = c.awards || [];
+        count += items.length;
+        const id = `zc-${group.year}-${ci + 1}`;
+        const open = (gi === 0 && ci === 0) ? 'true' : 'false';
+        return `<article class="zcomp" data-open="${open}">
+          <button class="zcomp-head" type="button" aria-expanded="${open}" aria-controls="${id}">
+            <span class="zcomp-no">${pad(ci + 1, 2)}</span>
+            <span class="zcomp-name">${c.name}</span>
+            <span class="zcomp-sum">${awardSummary(items)}</span>
+            <span class="zcomp-chev" aria-hidden="true"></span>
+          </button>
+          <div class="zcomp-body" id="${id}">
+            <div class="zcomp-inner">
+              ${items.map(a => `<div class="zaward">
+                <span class="ap">${a.project}</span>
+                <span class="ad">${a.detail}</span>
+                <span class="am">${a.members || '—'}</span>
+              </div>`).join('')}
+            </div>
+          </div>
+        </article>`;
       }).join('');
       return `<div class="log-year" data-year="${group.year}">
         <div class="ly-label"><b>${group.year}</b><span>${count} ENTRIES</span></div>
         <div class="ly-body">${comps}</div>
       </div>`;
     }).join('');
+    initRecordDrawers();
   }
 
   /* ------------------------------------------------------------------
@@ -261,21 +289,29 @@
 
   function renderCrew() {
     const adv = C.advisor || {};
-    $('#advisor').innerHTML = `<div class="adv-avatar rv">${adv.avatar || '杨'}</div>
-      <div class="adv-name rv">
-        <h3>${adv.name}</h3>
-        <span class="role">${adv.title}</span>
-        <p class="dept">${adv.department} · ${adv.email}${adv.phone ? ' · ' + adv.phone : ''}</p>
+    const research = (adv.research || '').split('·').map(t => t.trim()).filter(Boolean).join(' · ');
+    const ach = (adv.achievements || []);
+    $('#advisor').innerHTML = `
+      <div class="zadv-portrait rv">
+        <span class="zadv-char">${adv.avatar || '杨'}</span>
+        <span class="zadv-role">ADVISOR / 指导教师</span>
+        <span class="zadv-org">CAUC · 交通科学与工程学院</span>
       </div>
-      <div class="adv-body rv">
-        <p>${adv.background}</p>
-        <div class="ah-label">研究方向<em>RESEARCH</em></div>
-        <div class="adv-tags">${(adv.research || '').split('·').map(t => `<span>${t.trim()}</span>`).join('')}</div>
-      </div>
-      ${(adv.achievements || []).length ? `<div class="adv-ach rv">
-        <div class="ah-label">主要成果<em>ACHIEVEMENTS</em></div>
-        <ul>${adv.achievements.map(x => `<li>${x}</li>`).join('')}</ul>
-      </div>` : ''}`;
+      <div class="zadv-main rv">
+        <div class="zadv-head">
+          <h3>${adv.name || ''}</h3>
+          <span class="zadv-tag">${adv.title || ''}</span>
+        </div>
+        ${research ? `<p class="zadv-res"><b>RESEARCH</b>${research}</p>` : ''}
+        <p class="zadv-bio">${adv.background || ''}</p>
+        ${ach.length ? `<div class="zadv-ach">
+          <span class="zadv-achlb">ACHIEVEMENTS<br>主要成果</span>
+          <ul>${ach.map(x => `<li>${x}</li>`).join('')}</ul>
+        </div>` : ''}
+        <p class="zadv-foot">${adv.department || ''} <span>·</span>
+          <a href="mailto:${adv.email || ''}">${adv.email || ''}</a>
+          ${adv.phone ? ' <span>·</span> ' + adv.phone : ''}</p>
+      </div>`;
 
     const depts = M.departments || [];
     $('#projFilter').innerHTML = `<button class="chip" type="button" data-project="all" aria-pressed="true">全部</button>` +
@@ -287,6 +323,9 @@
     $('#cohortFilter').innerHTML = `<button class="chip" type="button" data-year="all" aria-pressed="true">全部</button>` +
       years.map(y => `<button class="chip" type="button" data-year="${y}" aria-pressed="false">${y} 届</button>`).join('');
     const nMembers = (M.people || []).length, nFounders = (M.founders || []).length;
+    if ($('#crewStatTeacher')) $('#crewStatTeacher').textContent = '1';
+    if ($('#crewStatFounder')) $('#crewStatFounder').textContent = (M.founders || []).length;
+    if ($('#crewStatMember')) $('#crewStatMember').textContent = (M.people || []).length;
     if ($('#tabCountMembers')) $('#tabCountMembers').textContent = nMembers;
     if ($('#tabCountFounders')) $('#tabCountFounders').textContent = nFounders;
 
@@ -454,27 +493,38 @@
   /* ------------------------------------------------------------------
      join / contact / footer
   ------------------------------------------------------------------ */
+  const ZICON = {
+    wrench: '<path d="M14.6 6.5a3.9 3.9 0 0 0-5.2 5.2L4.2 16.9l2.9 2.9 5.2-5.2a3.9 3.9 0 0 0 5.2-5.2l-2.2 2.2-2.7-2.7z"/>',
+    cpu: '<rect x="7" y="7" width="10" height="10" rx="1"/><path d="M10 4v3M14 4v3M10 17v3M14 17v3M4 10h3M4 14h3M17 10h3M17 14h3"/>',
+    eye: '<path d="M3 12s3.4-6 9-6 9 6 9 6-3.4 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.6"/>',
+    gamepad: '<rect x="3" y="8" width="18" height="9" rx="4"/><path d="M8 11v3M6.5 12.5h3M15.5 12h.01M17.5 13.5h.01"/>',
+    briefcase: '<rect x="3" y="7.5" width="18" height="12" rx="1.6"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3 13h18"/>',
+    rocket: '<path d="M13 4c4 1 6 4 6 8l-3 3-4-4 1-7z"/><path d="M9 15l-3 3M6 12l-2 2 3 3 2-2"/>',
+    trophy: '<path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3M10 17h4M12 13v4M8 20h8"/>',
+    users: '<circle cx="9" cy="9" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 6.2a3 3 0 0 1 0 5.6M17 19a5.5 5.5 0 0 0-2-4.3"/>',
+    star: '<path d="M12 4l2.4 5 5.6.7-4.1 3.8 1.1 5.5L12 16.4 7 19l1.1-5.5L4 9.7 9.6 9z"/>'
+  };
+  const zico = (name) => `<svg class="zico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">${ZICON[name] || ZICON.star}</svg>`;
+
   function renderJoin() {
     const R = C.recruit || {};
-    $('#joinIntro').innerHTML = (R.intro || []).map(p => `<p>${p}</p>`).join('')
-      + `<p class="targets">${R.targets || ''}</p>`;
+    const note = $('#joinNote');
+    if (note) note.innerHTML = (R.targets || '');
 
-    $('#joinStats').innerHTML = (R.highlights || []).map(h =>
-      `<div><b>${h.number}</b><span>${h.label}</span></div>`).join('');
-
-    $('#directions').innerHTML = (R.directions || []).map((d, i) => `
-      <article class="dir-row rv">
-        <span class="dir-idx">${pad(i + 1, 2)}</span>
-        <h3>${d.title}</h3>
-        <p>${d.desc}</p>
-        <div class="dir-tags">${(d.tags || '').split(',').map(t => `<span>${t.trim()}</span>`).join('')}</div>
+    $('#directions').innerHTML = (R.directions || []).map((d) => `
+      <article class="zrole rv">
+        <span class="zrole-ico">${zico(d.icon)}</span>
+        <div class="zrole-main"><h3>${d.title}</h3><p>${d.desc}</p></div>
+        <div class="zrole-tags">${(d.tags || '').split(',').map(t => `<span>${t.trim()}</span>`).join('')}</div>
       </article>`).join('');
 
     $('#process').innerHTML = (R.timeline || []).map(t => `
-      <li><span class="st">${t.step}</span><div class="pt"><b>${t.time}</b><span>${t.desc}</span></div></li>`).join('');
+      <li class="zstep"><span class="zstep-no">${t.step}</span>
+        <div><b>${t.time}</b><span>${t.desc}</span></div></li>`).join('');
 
-    $('#why').innerHTML = (R.why || []).map(w => `
-      <li><div><b>${w.title}</b><span>${w.desc}</span></div></li>`).join('');
+    $('#why').innerHTML = (R.why || []).map((w, i) => `
+      <li class="zwhy-item rv"><span class="zwhy-no">${pad(i + 1, 2)}</span>${zico(w.icon)}
+        <b>${w.title}</b><span>${w.desc}</span></li>`).join('');
 
     $('#faq').innerHTML = (R.faq || []).map((f, i) => `
       <div class="faq-item">
@@ -484,18 +534,20 @@
         <div class="faq-a" id="faq-a-${i}"><div><p>${f.a}</p></div></div>
       </div>`).join('');
 
-    const qr = (R.apply && R.apply.qr) || 'assets/images/通用/2026新生群.jpg';
+    const qr = (R.apply && R.apply.qr) || 'assets/images/通用/2026新生群-qr.png';
     $('#qrImg').src = qr;
 
     const Ct = C.contact || {};
-    $('#mailLink').textContent = Ct.email || '';
-    $('#mailLink').href = 'mailto:' + (Ct.email || '');
     $('#contactRows').innerHTML = `
-      <div><dt>地址</dt><dd>${Ct.address || ''}</dd></div>
-      <div><dt>学院</dt><dd>${Ct.department || ''}</dd></div>
-      <div><dt>咨询</dt><dd>${Ct.consultation || ''}</dd></div>
-      <div><dt>社团</dt><dd>${Ct.club || ''}</dd></div>
-      <div><dt>地图</dt><dd>${(Ct.map && Ct.map.title) || ''} · ${(Ct.map && Ct.map.subtitle) || ''}</dd></div>`;
+      <p class="zk">ADDRESS / 地址</p>
+      <p class="zaddr">${(Ct.address || '').replace('交通楼', '<br>交通楼')}</p>
+      <p class="zdept">${Ct.department || ''}</p>
+      <p class="zk">MAIL / 邮件</p>
+      <a class="zmail" href="mailto:${Ct.email || ''}">${Ct.email || ''}</a>
+      <div class="zcols">
+        <div><p class="zk">GUIDE / 咨询</p><p>${Ct.consultation || ''}</p></div>
+        <div><p class="zk">CLUB / 社团</p><p>${Ct.club || ''}</p></div>
+      </div>`;
 
     $('#sponsorList').innerHTML = ((C.sponsors && C.sponsors.items) || []).map(s => {
       const inv = /CADDX|CUAV/i.test(s.name) ? ' class="inv"' : '';
@@ -504,7 +556,8 @@
         ? `<a href="${s.link}" target="_blank" rel="noopener" aria-label="${s.name}">${img}</a>`
         : `<span class="sp" aria-label="${s.name}">${img}</span>`;
     }).join('');
-    $('#copyright').textContent = (C.site && C.site.footer) || '© 2026 CUAL';
+    const cp = $('#copyright');
+    if (cp) cp.textContent = '© 2026 CUAL';
   }
 
   /* ------------------------------------------------------------------
@@ -569,6 +622,27 @@
         item.classList.toggle('open', open);
         btn.setAttribute('aria-expanded', String(open));
       });
+    });
+  }
+
+  function initRecordDrawers() {
+    const log = $('#log');
+    if (!log || log.dataset.bound) return;
+    log.dataset.bound = '1';
+    log.addEventListener('click', (e) => {
+      const head = e.target.closest('.zcomp-head');
+      if (!head) return;
+      const card = head.closest('.zcomp');
+      const wasOpen = card.dataset.open === 'true';
+      log.querySelectorAll('.zcomp[data-open="true"]').forEach((c) => {
+        c.dataset.open = 'false';
+        const b = c.querySelector('.zcomp-head');
+        if (b) b.setAttribute('aria-expanded', 'false');
+      });
+      if (!wasOpen) {
+        card.dataset.open = 'true';
+        head.setAttribute('aria-expanded', 'true');
+      }
     });
   }
 
@@ -1074,6 +1148,7 @@
       document.body.classList.toggle('on-dark', dark);
 
       navLinks.forEach(a => a.classList.toggle('active', a.dataset.nav === current.id));
+      $$('#footNav a').forEach(a => a.classList.toggle('is-active', a.dataset.foot === current.id));
       if (altTicks) {
         $$('button', altTicks).forEach(b => b.classList.toggle('active', b.dataset.go === current.id));
       }
@@ -1163,23 +1238,112 @@
 
   /* 背景音乐：首次交互后起播（浏览器自动播放策略限制），按钮切换静音并记住选择 */
   function initBgm() {
-    const audio = $('#bgm'), btn = $('#bgmBtn');
-    if (!audio || !btn) return;
+    const btn = $('#bgmBtn');
+    if (!btn) return;
     const KEY = 'cual.bgm';
     let want = true;
     try { want = localStorage.getItem(KEY) !== 'off'; } catch (e) {}
-    audio.volume = 0.34;
+
+    /* 全部走 WebAudio：Neocities 的 CSP 会拦 blob: 媒体，decodeAudioData 不受影响 */
+    const AC = window.AudioContext || window.webkitAudioContext;
+    let actx = null, gain = null, analyser = null, fbuf = null, node = null, buf = null;
+    let offset = 0, startedAt = 0, playing = false, away = false, lvl = 0, rafId = 0;
 
     const paint = () => {
       btn.setAttribute('aria-pressed', want ? 'true' : 'false');
       const t = btn.querySelector('.bgm-txt');
       if (t) t.textContent = want ? 'SOUND ON' : 'SOUND OFF';
     };
+
+    const ensureGraph = () => {
+      if (!AC) return false;
+      if (!actx) {
+        try {
+          actx = new AC();
+          gain = actx.createGain();
+          gain.gain.value = 0.34;
+          analyser = actx.createAnalyser();
+          analyser.fftSize = 256;
+          analyser.smoothingTimeConstant = 0.80;
+          fbuf = new Uint8Array(analyser.frequencyBinCount);
+          gain.connect(analyser);
+          analyser.connect(actx.destination);
+        } catch (e) { actx = null; return false; }
+      }
+      if (actx.state === 'suspended') actx.resume().catch(() => {});
+      return true;
+    };
+
+    const meter = () => {
+      if (analyser) {
+        analyser.getByteFrequencyData(fbuf);
+        let sum = 0;
+        for (let i = 0; i < fbuf.length; i++) sum += fbuf[i] * fbuf[i];
+        const rms = Math.sqrt(sum / fbuf.length) / 255;
+        lvl += (Math.min(1, rms * 2.6) - lvl) * 0.35;
+      }
+      btn.style.setProperty('--lvl', playing && !away ? lvl.toFixed(3) : '0');
+      rafId = requestAnimationFrame(meter);
+    };
+    if (!rafId) rafId = requestAnimationFrame(meter);
+
+    /* 音源：mp3 以 base64 文本随站托管，解码成 AudioBuffer 后再播 */
+    const SRC = 'assets/audio/bgm.b64.txt';
+    let loadTask = null;
+    const load = () => {
+      if (buf) return Promise.resolve(true);
+      if (loadTask) return loadTask;
+      if (!ensureGraph()) return Promise.resolve(false);
+      loadTask = fetch(SRC)
+        .then((r) => r.text())
+        .then((t) => {
+          const b64 = t.trim();
+          const bin = atob(b64);
+          const u8 = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+          return new Promise((res) => {
+            actx.decodeAudioData(u8.buffer.slice(0), (ab) => { buf = ab; res(true); }, () => res(false));
+          });
+        })
+        .catch(() => { loadTask = null; return false; });
+      return loadTask;
+    };
+
+    const stopNode = () => {
+      if (!node) return;
+      try { node.stop(); } catch (e) {}
+      try { node.disconnect(); } catch (e) {}
+      node = null;
+    };
+
+    const playFrom = (off) => {
+      if (!buf || !ensureGraph()) return;
+      stopNode();
+      node = actx.createBufferSource();
+      node.buffer = buf;
+      node.loop = true;
+      node.connect(gain);
+      node.start(0, off % buf.duration);
+      startedAt = actx.currentTime;
+      offset = off;
+      playing = true;
+    };
+
+    const pauseAudio = () => {
+      if (!playing) return;
+      if (buf && actx) offset = (offset + (actx.currentTime - startedAt)) % buf.duration;
+      playing = false;
+      stopNode();
+    };
+
     const start = () => {
       if (!want) return;
-      const p = audio.play();
-      if (p && p.catch) p.catch(() => {});   // 被策略拦下就等下次手势
+      if (buf) { ensureGraph(); playFrom(offset); return; }
+      load().then((ok) => {
+        if (ok && want && !away) playFrom(offset);
+      });
     };
+
     paint();
 
     /* 第一次手势（点击/按键/滚动/触摸）再起播 */
@@ -1195,18 +1359,19 @@
     window.addEventListener('wheel', kick, { passive: true });
     window.addEventListener('touchstart', kick, { passive: true });
 
+    /* 空闲预取 + 预解码，避免首次点击时还在下 3.5MB */
+    const prefetch = () => { if (!buf) load(); };
+    if ('requestIdleCallback' in window) requestIdleCallback(prefetch, { timeout: 4000 });
+    else setTimeout(prefetch, 2500);
+
     btn.addEventListener('click', () => {
       want = !want;
       try { localStorage.setItem(KEY, want ? 'on' : 'off'); } catch (e) {}
       paint();
-      if (want) start(); else audio.pause();
+      if (want) start(); else pauseAudio();
     });
 
-    /* 页面不在最前（切标签/最小化/切到别的窗口）就停，回来再续 */
-    let away = false;
-    const pauseForAway = () => {
-      if (!away) { away = true; if (!audio.paused) audio.pause(); }
-    };
+    const pauseForAway = () => { if (!away) { away = true; pauseAudio(); } };
     const resumeIfBack = () => {
       if (away && want && !document.hidden) { away = false; start(); }
     };
@@ -1323,6 +1488,12 @@
       uniform vec2 uRes;
       uniform float uTime;
       float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
+      float segd(vec2 p,vec2 a,vec2 b){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/max(dot(ba,ba),1e-5),0.,1.);return length(pa-ba*h);}
+      vec2 nodeP(float fi,float fk,float tt){
+        float x=-2.35+fk*1.18;
+        float y=(hash(vec2(fi*2.7+1.3,fk*1.9+0.7))-.5)*1.55+sin(tt*.6+fi*1.9+fk*.55)*.10;
+        return vec2(x,y);
+      }
       float noise(vec2 p){
         vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
         float a=hash(i),b=hash(i+vec2(1,0)),c=hash(i+vec2(0,1)),d=hash(i+vec2(1,1));
@@ -1424,6 +1595,7 @@
   /* ------------------------------------------------------------------
      section shaders (story wind / contact dots)
   ------------------------------------------------------------------ */
+
   function initSectionShader(id, mode) {
     const cv = $('#' + id);
     if (!cv) return;
@@ -1433,7 +1605,7 @@
     const VS = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
     const FS = `
       precision mediump float;
-      uniform vec2 uRes; uniform float uTime; uniform float uMode;
+      uniform vec2 uRes; uniform float uTime; uniform float uMode; uniform float uDark;
       float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
       float noise(vec2 p){
         vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
@@ -1444,18 +1616,49 @@
       void main(){
         vec2 uv=(gl_FragCoord.xy*2.-uRes)/uRes.y;
         float t=uTime*.022;
-        vec3 paper=vec3(.945,.933,.898);
+        vec3 paper=mix(vec3(.945,.933,.898), vec3(.055,.055,.050), uDark);
         vec3 orange=vec3(1.,.29,.07);
-        vec3 ink=vec3(.047,.047,.043);
+        vec3 ink=mix(vec3(.047,.047,.043), vec3(.925,.915,.880), uDark);
         vec3 col=paper;
         float a=0.;
-        if(uMode<1.5){
+        float wide=step(2.5,uMode);
+        float mm=wide>.5?(1.-smoothstep(.55,2.30,length(uv*vec2(.58,1.0))))
+                       :(1.-smoothstep(.30,1.55,length(uv*vec2(.70,1.0))));
+        if(uMode>3.5){
+          float acc=0.;
+          for(int i=0;i<5;i++){
+            float fi=float(i);
+            for(int s2=0;s2<4;s2++){
+              float fs=float(s2);
+              vec2 q0=vec2(-2.35+fs*1.18,
+                     (hash(vec2(fi*2.7+1.3,fs*1.9+0.7))-.5)*1.55+sin(t*.6+fi*1.9+fs*.55)*.10);
+              vec2 q1=vec2(-2.35+(fs+1.)*1.18,
+                     (hash(vec2(fi*2.7+1.3,(fs+1.)*1.9+0.7))-.5)*1.55+sin(t*.6+fi*1.9+(fs+1.)*.55)*.10);
+              vec2 pa=uv-q0, ba=q1-q0;
+              float hh=clamp(dot(pa,ba)/max(dot(ba,ba),1e-5),0.,1.);
+              float dd=length(pa-ba*hh);
+              float ww=.0032+.0014*hash(vec2(fi,fs));
+              float ln=1.-smoothstep(ww,ww+.0070,dd);
+              float dash=(mod(fi,2.)>.5)?(step(.40,fract(hh*1.6-fi*.1))):1.;
+              acc=max(acc,ln*dash);
+            }
+            for(int k=0;k<5;k++){
+              float fk=float(k);
+              vec2 q=vec2(-2.35+fk*1.18,
+                     (hash(vec2(fi*2.7+1.3,fk*1.9+0.7))-.5)*1.55+sin(t*.6+fi*1.9+fk*.55)*.10);
+              vec2 dq=abs(uv-q);
+              acc=max(acc,(1.-smoothstep(.007,.013,max(dq.x,dq.y)))*.85);
+            }
+          }
+          float fade=1.-smoothstep(.55,2.30,length(uv*vec2(.58,1.0)));
+          col=mix(paper,orange,.42);
+          a=acc*fade*.55;
+        } else if(uMode<1.5||wide>.5){
           vec2 p=uv*vec2(1.05,1.65);
           float f=fbm(p*1.15+vec2(-t*1.25,t*.22));
           float line=1.-smoothstep(.0,.040,abs(fract(f*16.)-.5));
-          float m=1.-smoothstep(.30,1.55,length(uv*vec2(.70,1.0)));
           col=mix(paper,orange,.35);
-          a=line*.45*m;
+          a=line*(wide>.5?.85:.45)*mm;
         } else {
           vec2 g=uv*vec2(46.,36.);
           vec2 idc=floor(g); vec2 fr=fract(g)-.5;
@@ -1464,7 +1667,7 @@
           float d=1.-smoothstep(r,r+.07,length(fr));
           float m=1.-smoothstep(.45,1.65,length(uv));
           col=mix(ink,orange,n*.45);
-          a=d*.14*m;
+          a=d*(.14-.05*uDark)*m;
         }
         gl_FragColor=vec4(col,a);
       }`;
@@ -1493,9 +1696,11 @@
     const U = {
       res: gl.getUniformLocation(prog, 'uRes'),
       time: gl.getUniformLocation(prog, 'uTime'),
-      mode: gl.getUniformLocation(prog, 'uMode')
+      mode: gl.getUniformLocation(prog, 'uMode'),
+      dark: gl.getUniformLocation(prog, 'uDark')
     };
     gl.uniform1f(U.mode, mode);
+    gl.uniform1f(U.dark, cv.dataset.dark ? 1 : 0);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.clearColor(0, 0, 0, 0);
@@ -1520,6 +1725,7 @@
       gl.uniform2f(U.res, w, h);
       gl.uniform1f(U.time, (now - start) / 1000);
       gl.uniform1f(U.mode, mode);
+      gl.uniform1f(U.dark, cv.dataset.dark ? 1 : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
